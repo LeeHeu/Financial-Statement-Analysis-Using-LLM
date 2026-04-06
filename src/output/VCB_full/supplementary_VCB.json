@@ -1,0 +1,61 @@
+{
+  "ticker": "VCB",
+  "company_name": "Ngân hàng Vietcombank",
+  "fetch_timestamp": "2026-03-03",
+  "source_urls": [
+    "https://finance.vietstock.vn/vcb/chi-so-tai-chinh.htm",
+    "https://www.vietcombank.com.vn/en/Investors"
+  ],
+  "fetch_notes": "Vietstock page did not contain specific ratio data. Vietcombank IR page returned a 404 error.",
+  "key_ratios": {
+    "npl_ratio_percent": {
+      "FY2022": null,
+      "FY2023": null,
+      "FY2024": null
+    },
+    "coverage_ratio_percent": {
+      "FY2022": null,
+      "FY2023": null,
+      "FY2024": null
+    },
+    "car_percent": {
+      "FY2022": null,
+      "FY2023": null,
+      "FY2024": null
+    },
+    "casa_ratio_percent": {
+      "FY2022": null,
+      "FY2023": null,
+      "FY2024": null
+    },
+    "ldr_percent": {
+      "FY2022": null,
+      "FY2023": null,
+      "FY2024": null
+    },
+    "nim_vietstock_percent": {
+      "FY2022": null,
+      "FY2023": null,
+      "FY2024": null
+    }
+  },
+  "management_guidance": {
+    "year": "2026",
+    "credit_growth_target_percent": null,
+    "npat_target_ty_dong": null,
+    "pretax_profit_target_ty_dong": null,
+    "nim_target_percent": null,
+    "npl_target_percent": null,
+    "roe_target_percent": null,
+    "other_targets": ""
+  },
+  "peer_data": {
+    "description": "Big-4 VN bank average estimates (if found)",
+    "big4_avg_npl_percent": null,
+    "big4_avg_roe_percent": null,
+    "big4_avg_nim_percent": null,
+    "big4_avg_cir_percent": null,
+    "big4_avg_casa_percent": null,
+    "peer_names": []
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "company": "Ngân hàng Vietcombank",
+  "ticker": "VCB",
+  "currency": "VND",
+  "units": "tỷ đồng",
+  "financials": {
+    "income_statement": {
+      "net_interest_income": {
+        "FY2022": 53246.48,
+        "FY2023": 53614.43,
+        "FY2024": 55405.74
+      },
+      "total_operating_income": {
+        "FY2022": 66283.10,
+        "FY2023": 66875.84,
+        "FY2024": 66154.89
+      },
+      "operating_expenses": {
+        "FY2022": 21860.26,
+        "FY2023": 22828.54,
+        "FY2024": 24635.85
+      },
+      "ppop": {
+        "FY2022": 44422.84,
+        "FY2023": 44047.30,
+        "FY2024": 41418.04
+      },
+      "provision": {
+        "FY2022": null,
+        "FY2023": null,
+        "FY2024": null
+      },
+      "pre_tax_profit": {
+        "FY2022": 37368.09,
+        "FY2023": 41328.47,
+        "FY2024": 42236.14
+      },
+      "income_tax": {
+        "FY2022": 7449.04,
+        "FY2023": 8206.19,
+        "FY2024": 8383.02
+      },
+      "net_profit": {
+        "FY2022": 29899.01,
+        "FY2023": 33101.03,
+        "FY2024": 33831.39
+      }
+    },
+    "balance_sheet": {
+      "total_assets": {
+        "FY2022": 1813815.17,
+        "FY2023": 1839724.56,
+        "FY2024": 2085873.52
+      },
+      "loans": {
+        "FY2022": null,
+        "FY2023": null,
+        "FY2024": null
+      },
+      "deposits": {
+        "FY2022": null,
+        "FY2023": null,
+        "FY2024": null
+      },
+      "equity": {
+        "FY2022": 135557.70,
+        "FY2023": 164986.50,
+        "FY2024": 196112.91
+      }
+    },
+    "key_ratios": {
+      "nim_percent": {
+        "FY2022": 29.36,
+        "FY2023": 27.13,
+        "FY2024": 26.55
+      },
+      "npl_ratio_percent": {
+        "FY2022": null,
+        "FY2023": null,
+        "FY2024": null
+      },
+      "coverage_ratio_percent": {
+        "FY2022": null,
+        "FY2023": null,
+        "FY2024": null
+      },
+      "car_percent": {
+        "FY2022": null,
+        "FY2023": null,
+        "FY2024": null
+      },
+      "roe_percent": {
+        "FY2022": null,
+        "FY2023": 20.06,
+        "FY2024": null
+      },
+      "roa_percent": {
+        "FY2022": null,
+        "FY2023": null,
+        "FY2024": null
+      },
+      "cir_percent": {
+        "FY2022": 32.96,
+        "FY2023": null,
+        "FY2024": null
+      },
+      "ldr_percent": {
+        "FY2022": null,
+        "FY2023": null,
+        "FY2024": null
+      },
+      "casa_ratio_percent": {
+        "FY2022": null,
+        "FY2023": null,
+        "FY2024": null
+      },
+      "credit_growth_percent": {
+        "FY2022": null,
+        "FY2023": null,
+        "FY2024": null
+      }
+    }
+  },
+  "management_guidance": {
+    "credit_growth_target": null,
+    "npat_target": null,
+    "nim_target": null,
+    "npl_target": null,
+    "roe_target": null
+  }
+}

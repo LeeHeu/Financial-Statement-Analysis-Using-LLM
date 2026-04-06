@@ -46,7 +46,11 @@ class DeepSearch():
             output_spreadsheet_path: str,
             short_run: bool = False,
             verbose: bool = False,
-            ux: str = 'rich'):
+            ux: str = 'rich',
+            web_data_gatherer_prompt_path: str = "web_data_gatherer_agent.md",
+            cfa_report_agent_prompt_path: str = "cfa_report_agent.md",
+            cfa_writer_model_name: str = "",
+            ir_page_url: str = ""):
         self.app_name = app_name
         self.config = config
         self.ticker = ticker
@@ -67,6 +71,12 @@ class DeepSearch():
             financial_research_prompt_path, self.prompts_path)
         self.excel_writer_agent_prompt_path: Path = self.__resolve_path(
             excel_writer_agent_prompt_path, self.prompts_path)
+        self.web_data_gatherer_prompt_path: Path = self.__resolve_path(
+            web_data_gatherer_prompt_path, self.prompts_path)
+        self.cfa_report_agent_prompt_path: Path = self.__resolve_path(
+            cfa_report_agent_prompt_path, self.prompts_path)
+        self.cfa_writer_model_name: str = cfa_writer_model_name or orchestrator_model_name
+        self.ir_page_url: str = ir_page_url
 
         # from mcp_agent.workflows.llm.augmented_llm_openai import OpenAIAugmentedLLM
         # self.llm_factory = OpenAIAugmentedLLM
@@ -80,6 +90,12 @@ class DeepSearch():
                 from mcp_agent.workflows.llm.augmented_llm_openai import \
                     OpenAIAugmentedLLM
                 self.llm_factory = OpenAIAugmentedLLM
+            # case 'ollama':
+            #     from mcp_agent.workflows.llm.augmented_llm_ollama import OllamaAugmentedLLM
+            #     self.llm_factory = OllamaAIAugmentedLLM
+            # case 'groq':
+            #    from finance_deep_search.groq_augmented_llm import GroqAugmentedLLM
+            #    self.llm_factory = GroqAugmentedLLM
             case _:
                 raise ValueError(f"Unrecognized provider: {self.provider}")
 
@@ -106,6 +122,10 @@ class DeepSearch():
             "prompts_path": self.prompts_path,
             "financial_research_prompt_path": self.financial_research_prompt_path,
             "excel_writer_agent_prompt_path": self.excel_writer_agent_prompt_path,
+            "web_data_gatherer_prompt_path": self.web_data_gatherer_prompt_path,
+            "cfa_report_agent_prompt_path": self.cfa_report_agent_prompt_path,
+            "cfa_writer_model_name": self.cfa_writer_model_name,
+            "ir_page_url": self.ir_page_url,
             "start_time": self.start_time,
             "short_run": self.short_run,
             "verbose": self.verbose,
@@ -146,46 +166,72 @@ class DeepSearch():
     async def run(self) -> dict[str,str]:
         results = {}
 
-        # Load and format the financial research task prompt
+        # ── Phase 0: Web data gathering ───────────────────────────────────────
+        # Fetch supplementary data (NPL, CAR, CASA, LDR, management guidance)
+        # from Vietstock and company IR pages. Saves supplementary_{ticker}.json.
+        web_gatherer_task_prompt = self.prepare_web_gatherer_task_prompt()
+        web_gatherer_agent = Agent(
+            name="WebDataGatherer",
+            instruction=web_gatherer_task_prompt,
+            context=self.orchestrator.context,
+            server_names=["fetch", "filesystem"],
+        )
+        async with web_gatherer_agent:
+            web_gatherer_llm = await web_gatherer_agent.attach_llm(self.llm_factory)
+            web_gatherer_result = await web_gatherer_llm.generate(
+                message="Fetch supplementary financial data from web sources and save to JSON.",
+                request_params=RequestParams(
+                    model=self.orchestrator_model_name,
+                    temperature=0.2,
+                    max_iterations=10,
+                ),
+            )
+            results['web_data'] = web_gatherer_result
+            wg_file = f"{self.output_path}/web_gatherer_result.txt"
+            self.logger.info(f"Writing web gatherer result to: {wg_file}")
+            with open(wg_file, "w", encoding="utf-8") as f:
+                f.write(str(web_gatherer_result))
+
+        # ── Phase 1: Financial research (deep orchestrator) ───────────────────
         financial_research_task_prompt = self.prepare_financial_research_task_prompt()
-
         max_iterations = 1 if self.short_run else 10
-
         research_result = await self.orchestrator.generate(
             message=financial_research_task_prompt,
             request_params=RequestParams(
-                model=self.orchestrator_model_name, 
-                temperature=0.7, 
-                max_iterations=max_iterations
+                model=self.orchestrator_model_name,
+                temperature=0.7,
+                max_iterations=max_iterations,
             ),
         )
         results['research'] = research_result
-        rr_file = f"{self.output_path}/research_result.txt"
-        self.logger.info(f"Writing 'raw' returned research result to: {rr_file}")
-        with open(rr_file, "w", encoding="utf-8") as file:
+        research_payload = self._extract_research_payload_text(research_result)
+        rr_raw_file = f"{self.output_path}/research_result_raw.txt"
+        self.logger.info(f"Writing raw returned research result to: {rr_raw_file}")
+        with open(rr_raw_file, "w", encoding="utf-8") as file:
             file.write(str(research_result))
+        rr_file = f"{self.output_path}/research_result.txt"
+        self.logger.info(f"Writing parsed research payload to: {rr_file}")
+        with open(rr_file, "w", encoding="utf-8") as file:
+            file.write(research_payload if research_payload else str(research_result))
 
-        # The Excel writer task prompt
-        excel_task_prompt = self.prepare_excel_task_prompt(str(research_result))
-
+        # ── Phase 2: Excel writer ─────────────────────────────────────────────
+        excel_task_prompt = self.prepare_excel_task_prompt(
+            research_payload if research_payload else str(research_result)
+        )
         excel_agent = Agent(
             name="ExcelWriter",
             instruction=excel_task_prompt,
             context=self.orchestrator.context,
-            server_names=["excel"]
+            server_names=["excel"],
         )
-
         async with excel_agent:
-            excel_llm = await excel_agent.attach_llm(
-                self.llm_factory
-            )
-
+            excel_llm = await excel_agent.attach_llm(self.llm_factory)
             excel_result = await excel_llm.generate(
                 message="Generate the Excel file with the provided financial data.",
                 request_params=RequestParams(
                     model=self.excel_writer_model_name,
                     temperature=0.7,
-                    max_iterations=10  # Excel always needs ≥4 steps; do not cap with short_run
+                    max_iterations=10,  # Excel always needs ≥4 steps; do not cap with short_run
                 ),
             )
             results['excel'] = excel_result
@@ -194,7 +240,63 @@ class DeepSearch():
             with open(er_file, "w", encoding="utf-8") as file:
                 file.write(str(excel_result))
 
+        # ── Phase 3: CFA report generation ────────────────────────────────────
+        # Synthesises all data sources into a CFA-standard Markdown report.
+        cfa_task_prompt = self.prepare_cfa_report_task_prompt()
+        cfa_agent = Agent(
+            name="CFAReportWriter",
+            instruction=cfa_task_prompt,
+            context=self.orchestrator.context,
+            server_names=["filesystem"],
+        )
+        async with cfa_agent:
+            cfa_llm = await cfa_agent.attach_llm(self.llm_factory)
+            cfa_result = await cfa_llm.generate(
+                message="Generate the CFA-standard equity research report and save it to the specified file.",
+                request_params=RequestParams(
+                    model=self.cfa_writer_model_name,
+                    temperature=0.7,
+                    max_iterations=10,
+                ),
+            )
+            results['cfa'] = cfa_result
+            cfa_result_file = f"{self.output_path}/cfa_result.txt"
+            self.logger.info(f"Writing CFA report result to: {cfa_result_file}")
+            with open(cfa_result_file, "w", encoding="utf-8") as f:
+                f.write(str(cfa_result))
+
         return results
+
+    def _extract_research_payload_text(self, research_result: Any) -> str:
+        """
+        Extract the most useful textual payload from orchestrator output.
+        Prefer fenced JSON if available.
+        """
+        candidates: list[str] = []
+
+        if isinstance(research_result, list):
+            for msg in reversed(research_result):
+                content = getattr(msg, "content", None)
+                if isinstance(content, str) and content.strip():
+                    candidates.append(content.strip())
+
+        content = getattr(research_result, "content", None)
+        if isinstance(content, str) and content.strip():
+            candidates.append(content.strip())
+
+        candidates.append(str(research_result))
+
+        for text in candidates:
+            match = re.search(r"```json\s*([\s\S]*?)\s*```", text, flags=re.IGNORECASE)
+            if match:
+                return match.group(1).strip()
+
+        for text in candidates:
+            stripped = text.strip()
+            if stripped:
+                return stripped
+
+        return ""
 
     def prepare_financial_research_task_prompt(self) -> str:
         """Load and format the financial task research task prompt."""
@@ -202,6 +304,7 @@ class DeepSearch():
             self.financial_research_prompt_path)
         output_path_abs = Path(self.output_path).resolve()
         yfinance_json_path = str(output_path_abs / f"yfinance_{self.ticker}.json")
+        supplementary_json_path = str(output_path_abs / f"supplementary_{self.ticker}.json")
         financial_research_task_prompt = replace_variables(
             financial_research_task_prompt_template,
             ticker=self.ticker,
@@ -210,6 +313,7 @@ class DeepSearch():
             units=f"{self.reporting_currency} millions",
             output_path=str(output_path_abs),
             yfinance_json_path=yfinance_json_path,
+            supplementary_json_path=supplementary_json_path,
         )
         financial_research_task_prompt_file = f"{self.output_path}/financial_research_task_prompt.txt"
         if self.logger:  # may not be initialized in tests...
@@ -218,6 +322,53 @@ class DeepSearch():
             file.write("This is the prompt that will be used for the financial deep research:\n")
             file.write(financial_research_task_prompt)
         return financial_research_task_prompt
+
+    def prepare_web_gatherer_task_prompt(self) -> str:
+        """Load and format the web data gatherer task prompt."""
+        template = load_prompt_markdown(self.web_data_gatherer_prompt_path)
+        output_path_abs = Path(self.output_path).resolve()
+        supplementary_json_path = str(output_path_abs / f"supplementary_{self.ticker}.json")
+        prompt = replace_variables(
+            template,
+            ticker=self.ticker,
+            ticker_lower=self.ticker.lower(),
+            company_name=self.company_name,
+            ir_page_url=self.ir_page_url,
+            supplementary_json_path=supplementary_json_path,
+            current_year=str(datetime.now().year),
+            current_date=datetime.now().strftime("%Y-%m-%d"),
+        )
+        prompt_file = f"{self.output_path}/web_gatherer_task_prompt.txt"
+        if self.logger:
+            self.logger.info(f"Writing web gatherer task prompt to {prompt_file}")
+        with open(prompt_file, "w", encoding="utf-8") as f:
+            f.write("This is the prompt for the web data gatherer agent:\n")
+            f.write(prompt)
+        return prompt
+
+    def prepare_cfa_report_task_prompt(self) -> str:
+        """Load and format the CFA report agent task prompt."""
+        template = load_prompt_markdown(self.cfa_report_agent_prompt_path)
+        output_path_abs = Path(self.output_path).resolve()
+        prompt = replace_variables(
+            template,
+            ticker=self.ticker,
+            company_name=self.company_name,
+            reporting_currency=self.reporting_currency,
+            yfinance_json_path=str(output_path_abs / f"yfinance_{self.ticker}.json"),
+            supplementary_json_path=str(output_path_abs / f"supplementary_{self.ticker}.json"),
+            research_result_path=str(output_path_abs / "research_result.txt"),
+            cfa_report_path=str(output_path_abs / f"cfa_report_{self.ticker}.md"),
+            current_date=datetime.now().strftime("%Y-%m-%d"),
+            current_year=str(datetime.now().year),
+        )
+        prompt_file = f"{self.output_path}/cfa_report_task_prompt.txt"
+        if self.logger:
+            self.logger.info(f"Writing CFA report task prompt to {prompt_file}")
+        with open(prompt_file, "w", encoding="utf-8") as f:
+            f.write("This is the prompt for the CFA report agent:\n")
+            f.write(prompt)
+        return prompt
 
     def _format_yfinance_table(self) -> str:
         """Format pre-fetched yfinance data as a ready-to-use data table for Excel writer."""

@@ -108,6 +108,12 @@ async def do_main(deep_search: DeepSearch):
                 pass
 
         # Show the results
+        web_data_results = results.get('web_data')
+        if web_data_results:
+            mcp_app.logger.info(f"[Phase 0] Web data: {truncate(str(web_data_results), 500, '...')}")
+        else:
+            mcp_app.logger.warning("[Phase 0] No web data results (supplementary JSON may be empty).")
+
         research_results = results.get('research')
         if research_results:
             mcp_app.logger.info(truncate(str(research_results), 2000, '...'))
@@ -120,14 +126,22 @@ async def do_main(deep_search: DeepSearch):
         else:
             mcp_app.logger.error("No Excel results!!")
 
+        cfa_results = results.get('cfa')
+        if cfa_results:
+            mcp_app.logger.info(f"[Phase 3] CFA report: {truncate(str(cfa_results), 500, '...')}")
+        else:
+            mcp_app.logger.error("[Phase 3] No CFA report results!!")
+
         display.report_results(research_results, excel_results)
 
         await display.final_data_update()
 
+        cfa_report_path = str(Path(args.output_path).resolve() / f"cfa_report_{args.ticker}.md")
         final_messages = [
             "\n",
             f"Finished: See output files under {args.output_path}.",
-            f"For example, the spreadsheet should be: {output_spreadsheet_path}",
+            f"  Spreadsheet : {output_spreadsheet_path}",
+            f"  CFA Report  : {cfa_report_path}",
         ]
         display.show_final_messages(final_messages)
 
@@ -141,11 +155,34 @@ if __name__ == "__main__":
     def_prompts_path = "./finance_deep_search/prompts"
     def_financial_research_agent_prompt_file = "financial_research_agent.md"
     def_excel_writer_agent_prompt_file = "excel_writer_agent.md"
+    def_web_data_gatherer_prompt_file = "web_data_gatherer_agent.md"
+    def_cfa_report_agent_prompt_file = "cfa_report_agent.md"
+
+    # Known IR pages for Vietnamese listed banks (used by web_data_gatherer_agent)
+    VN_BANK_IR_PAGES = {
+        "VCB":  "https://www.vietcombank.com.vn/en/Investors",
+        "BID":  "https://ir.bidv.com.vn/",
+        "CTG":  "https://www.vietinbank.vn/en/investors",
+        "MBB":  "https://ir.mbbank.com.vn/",
+        "TCB":  "https://ir.techcombank.com.vn/",
+        "VPB":  "https://ir.vpbank.com.vn/",
+        "ACB":  "https://www.acb.com.vn/en/investor-relations",
+        "STB":  "https://ir.sacombank.com.vn/",
+        "TPB":  "https://tpb.vn/en/investors",
+        "HDB":  "https://ir.hdbank.com.vn/",
+        "LPB":  "https://ir.lienvietpostbank.com.vn/",
+        "MSB":  "https://ir.msb.com.vn/",
+        "OCB":  "https://ir.ocb.com.vn/",
+        "SHB":  "https://ir.shb.com.vn/",
+        "SSB":  "https://ir.seabank.com.vn/",
+        "EIB":  "https://ir.eximbank.com.vn/",
+    }
 
     parser = argparse.ArgumentParser(
         description="Deep Finance Research using orchestrated AI agents",
         epilog="""
-Due to current limitations, you must use either OpenAI, Anthropic, and you have to tell us which one using the `--provider` argument,
+Due to current limitations, you must use either OpenAI, Anthropic, or local models
+served by ollama, and you have to tell us which one using the `--provider` argument,
 although it defaults to 'openai'. The same provider must be used for BOTH the 
 orchestrator and excel writer models, so specify them accordingly. The default is 'openai',
 which works for both OpenAI and Ollama, but you currently have to edit mcp_agent.config.yaml
@@ -189,6 +226,16 @@ to use the correct settings!
         help=f"Path where the Excel writer agent prompt file is located. (Default: {def_excel_writer_agent_prompt_file}) {relative}"
     )
     parser.add_argument(
+        "--web-data-gatherer-prompt-path",
+        default=def_web_data_gatherer_prompt_file,
+        help=f"Path to the web data gatherer agent prompt file. (Default: {def_web_data_gatherer_prompt_file}) {relative}"
+    )
+    parser.add_argument(
+        "--cfa-report-agent-prompt-path",
+        default=def_cfa_report_agent_prompt_file,
+        help=f"Path to the CFA report agent prompt file. (Default: {def_cfa_report_agent_prompt_file}) {relative}"
+    )
+    parser.add_argument(
         "--orchestrator-model",
         default="gpt-4o",
         #default="openai/gpt-oss-120b",
@@ -201,8 +248,13 @@ to use the correct settings!
         help="The model used for writing results to Excel (default: o4-mini); a less powerful model is sufficient."
     )
     parser.add_argument(
+        "--cfa-writer-model",
+        default="",
+        help="The model used for the CFA report agent (default: same as --orchestrator-model)."
+    )
+    parser.add_argument(
         "--provider",
-        choices=["openai", "anthropic", "ollama", "groq"], 
+        choices=["openai", "anthropic", "ollama"],
         default="openai",
         help="The inference provider. Where is the model served? See the note at the bottom of this help. (Default: openai)"
     )
@@ -272,6 +324,9 @@ to use the correct settings!
         budget=budget_config,
     )
 
+    # Resolve IR page URL from known mapping.
+    ir_page_url = VN_BANK_IR_PAGES.get(args.ticker.upper(), "")
+
     deep_search = DeepSearch(
         app_name = def_app_name,
         config = config,
@@ -289,6 +344,10 @@ to use the correct settings!
         short_run = args.short_run,
         verbose = args.verbose,
         ux = args.ux,
+        web_data_gatherer_prompt_path = args.web_data_gatherer_prompt_path,
+        cfa_report_agent_prompt_path = args.cfa_report_agent_prompt_path,
+        cfa_writer_model_name = args.cfa_writer_model,
+        ir_page_url = ir_page_url,
     )
 
     # Pre-fetch yfinance financial data using CPython (the project venv may be PyPy)
