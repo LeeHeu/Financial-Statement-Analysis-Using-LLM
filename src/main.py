@@ -274,6 +274,11 @@ to use the correct settings!
         action='store_true',
         help="Print some extra output. Useful for some testing and debugging scenarios."
     )
+    parser.add_argument(
+        "--force-rag-refresh",
+        action="store_true",
+        help="Force rerun of RAG retrieval even if retrieved_context_{ticker}.json already exists."
+    )
     
     args = parser.parse_args()
     
@@ -366,5 +371,39 @@ to use the correct settings!
             print(f"[pre-fetch] yfinance data saved to {yfinance_json}")
     else:
         print(f"[pre-fetch] yfinance data already exists at {yfinance_json}, skipping fetch.")
+
+    # Phase 2.5 — RAG retrieval from knowledge base (runs only if KB exists)
+    rag_retriever_script = Path(__file__).parent / "finance_deep_search" / "rag_retriever.py"
+    rag_db_path = Path(__file__).parent / "rag_kb"
+    rag_sections_path = Path(__file__).parent / "finance_deep_search" / "rag_sections.yaml"
+    retrieved_context_json = Path(args.output_path).resolve() / f"retrieved_context_{args.ticker}.json"
+
+    if rag_db_path.exists():
+        should_refresh = args.force_rag_refresh or (not retrieved_context_json.exists())
+        if should_refresh:
+            if args.force_rag_refresh and retrieved_context_json.exists():
+                print(f"[rag] force refresh enabled: overwriting existing context at {retrieved_context_json}")
+            print(f"[rag] Retrieving context from knowledge base for {args.ticker} ...")
+            rag_result = subprocess.run(
+                ["uvx", "--python", "3.12",
+                 "--with", "chromadb", "--with", "openai", "--with", "pyyaml",
+                 "python", str(rag_retriever_script),
+                 args.ticker,
+                 str(Path(args.output_path).resolve()),
+                 str(rag_db_path),
+                 str(rag_sections_path)],
+                capture_output=True, text=True
+            )
+            if rag_result.returncode != 0:
+                print(f"[rag] WARNING: RAG retrieval failed:\n{rag_result.stderr}")
+            else:
+                print(f"[rag] Retrieved context saved to {retrieved_context_json}")
+        else:
+            print(f"[rag] Retrieved context already exists at {retrieved_context_json}, skipping.")
+    else:
+        print(f"[rag] No knowledge base at {rag_db_path} — skipping RAG retrieval.")
+        print(f"[rag] To enable RAG: add docs to src/rag_docs/ then run:")
+        print(f"[rag]   uvx --python 3.12 --with chromadb --with openai --with pdfplumber --with pyyaml "
+              f"python finance_deep_search/rag_ingest.py")
 
     asyncio.run(do_main(deep_search))

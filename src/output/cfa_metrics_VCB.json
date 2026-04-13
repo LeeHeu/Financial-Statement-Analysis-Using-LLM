@@ -1,0 +1,158 @@
+{
+  "ticker": "VCB",
+  "company_name": "Ngân hàng Vietcombank",
+  "as_of_date": "2026-03-12",
+  "metrics": {
+    "assumptions": {
+      "ke_percent": 13.0,
+      "g_percent": 8.0
+    },
+    "base_metrics": {
+      "FY2022": {
+        "nii": 53246.48,
+        "toi": 66283.1,
+        "opex": 21860.26,
+        "ppop": 44422.84,
+        "pbt": 37368.09,
+        "tax": 7449.04,
+        "npat": 29899.01,
+        "assets": 1813815.17,
+        "equity": 135557.7,
+        "nim_percent": 2.9356,
+        "cir_percent": 32.9801,
+        "roe_percent": 22.0563,
+        "roa_percent": 1.6484,
+        "net_margin_percent": 45.108,
+        "asset_turnover": 0.036543,
+        "equity_multiplier": 13.3804
+      },
+      "FY2023": {
+        "nii": 53614.43,
+        "toi": 66875.84,
+        "opex": 22828.54,
+        "ppop": 44047.3,
+        "pbt": 41328.47,
+        "tax": 8206.19,
+        "npat": 33101.03,
+        "assets": 1839724.56,
+        "equity": 164986.5,
+        "nim_percent": 2.9143,
+        "cir_percent": 34.1357,
+        "roe_percent": 20.0629,
+        "roa_percent": 1.7992,
+        "net_margin_percent": 49.4962,
+        "asset_turnover": 0.036351,
+        "equity_multiplier": 11.1508
+      },
+      "FY2024": {
+        "nii": 55405.74,
+        "toi": 66154.89,
+        "opex": 24635.85,
+        "ppop": 41519.04,
+        "pbt": 42236.14,
+        "tax": 8383.02,
+        "npat": 33831.39,
+        "assets": 2085873.52,
+        "equity": 196112.91,
+        "nim_percent": 2.6562,
+        "cir_percent": 37.2397,
+        "roe_percent": 17.251,
+        "roa_percent": 1.6219,
+        "net_margin_percent": 51.1397,
+        "asset_turnover": 0.031716,
+        "equity_multiplier": 10.6361
+      }
+    },
+    "yoy_metrics": {
+      "FY2023": {
+        "nii_yoy_percent": 0.691,
+        "toi_yoy_percent": 0.8943,
+        "npat_yoy_percent": 10.7095,
+        "ppop_yoy_percent": -0.8454,
+        "pbt_yoy_percent": 10.5983
+      },
+      "FY2024": {
+        "nii_yoy_percent": 3.3411,
+        "toi_yoy_percent": -1.078,
+        "npat_yoy_percent": 2.2065,
+        "ppop_yoy_percent": -5.7399,
+        "pbt_yoy_percent": 2.1962
+      }
+    },
+    "dupont": {
+      "fy2024": {
+        "net_margin_percent": 51.1397,
+        "asset_turnover": 0.031716,
+        "equity_multiplier": 10.6361,
+        "roe_percent": 17.251,
+        "dupont_roe_percent": 17.2512
+      }
+    },
+    "valuation": {
+      "current_price": 64900.0,
+      "book_value_per_share": 27222.738,
+      "current_pb": 2.384,
+      "peer_target_pb": 2.0,
+      "pb_fair_value": 54445.476,
+      "justified_pb": 1.8502,
+      "gordon_fair_value": 50367.5098,
+      "blended_fair_value": 52406.4929,
+      "blended_upside_percent": -19.2504,
+      "gordon_upside_percent": -22.3921,
+      "rating": "UNDERPERFORM",
+      "market_data": {
+        "market_cap_ty_dong": 542283.31,
+        "trailing_pe": 15.408321,
+        "trailing_eps": 4212.01
+      }
+    },
+    "scenarios": {
+      "bear": {
+        "roe_percent": 14.6634,
+        "g_percent": 6.0,
+        "ke_percent": 13.0,
+        "justified_pb": 1.2376,
+        "fair_value": 33691.4439,
+        "upside_percent": -48.0871
+      },
+      "base": {
+        "roe_percent": 17.251,
+        "g_percent": 8.0,
+        "ke_percent": 13.0,
+        "justified_pb": 1.8502,
+        "fair_value": 50367.5098,
+        "upside_percent": -22.3921
+      },
+      "bull": {
+        "roe_percent": 19.8387,
+        "g_percent": 10.0,
+        "ke_percent": 13.0,
+        "justified_pb": 3.2796,
+        "fair_value": 89278.3304,
+        "upside_percent": 37.5629
+      }
+    },
+    "sensitivity_justified_pb": {
+      "ke_12": {
+        "g_6": 1.8752,
+        "g_8": 2.3128,
+        "g_10": 3.6255
+      },
+      "ke_13": {
+        "g_6": 1.6073,
+        "g_8": 1.8502,
+        "g_10": 2.417
+      },
+      "ke_14": {
+        "g_6": 1.4064,
+        "g_8": 1.5418,
+        "g_10": 1.8128
+      }
+    },
+    "sanity_checks": {
+      "passed": true,
+      "errors": [],
+      "warnings": []
+    }
+  }
+}

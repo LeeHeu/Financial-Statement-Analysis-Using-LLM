@@ -1,0 +1,21 @@
+{
+  "ticker": "VCB",
+  "as_of_date": "2026-03-12",
+  "status": "poor",
+  "missing_fields": [
+    "key_ratios.npl_ratio_percent.FY2024",
+    "key_ratios.coverage_ratio_percent.FY2024",
+    "key_ratios.car_percent.FY2024",
+    "key_ratios.casa_ratio_percent.FY2024",
+    "key_ratios.ldr_percent.FY2024",
+    "management_guidance.credit_growth_target_percent",
+    "management_guidance.pretax_profit_target_ty_dong",
+    "management_guidance.nim_target_percent",
+    "management_guidance.npl_target_percent",
+    "management_guidance.roe_target_percent"
+  ],
+  "missing_count": 10,
+  "required_count": 10,
+  "completeness_ratio": 0.0,
+  "notes": "Attempted multiple URLs including financial ratios and investor relations sections but could not access specific financial data due to page errors or lack of detailed content."
+}

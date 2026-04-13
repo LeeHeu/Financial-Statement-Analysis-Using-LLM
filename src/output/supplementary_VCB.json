@@ -1,12 +1,13 @@
 {
   "ticker": "VCB",
   "company_name": "Ngân hàng Vietcombank",
-  "fetch_timestamp": "2026-03-03",
+  "fetch_timestamp": "2026-03-09",
   "source_urls": [
     "https://finance.vietstock.vn/vcb/chi-so-tai-chinh.htm",
-    "https://www.vietcombank.com.vn/en/Investors"
+    "https://finance.vietstock.vn/vcb/bao-cao-tai-chinh.htm",
+    "https://finance.vietstock.vn/vcb/tin-tuc.htm"
   ],
-  "fetch_notes": "The Vietstock page did not contain specific ratio data in the section retrieved. The Vietcombank investor relations page returned a 404 error.",
+  "fetch_notes": "Attempted multiple URLs including financial ratios and investor relations sections but could not access specific financial data due to page errors or lack of detailed content.",
   "key_ratios": {
     "npl_ratio_percent": {
       "FY2022": null,

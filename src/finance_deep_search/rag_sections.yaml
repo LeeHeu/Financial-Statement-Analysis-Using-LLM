@@ -1,0 +1,66 @@
+# RAG retrieval config — one entry per CFA report section.
+# Each section has a list of queries (run in order), top_k chunks to keep,
+# and an optional doc_type filter. All matching chunks are deduped and
+# re-ranked by score; only the top_k are written to retrieved_context.json.
+#
+# doc_type values (set in <filename>.meta.json when ingesting):
+#   cfa_framework   — CFA Institute standards, equity research guidelines
+#   financial_statement — standalone quarterly, semiannual, or audited financial statements
+#   sample_report   — published broker/CTCK research reports
+#   industry        — sector/industry analysis documents
+#   regulatory      — NHNN, SBV, Basel circulars and guidelines
+
+sections:
+
+  business_model:
+    queries:
+      - "banking business model revenue streams net interest income fee income"
+      - "mo hinh kinh doanh ngan hang nguon thu nhap phi dich vu"
+      - "bank financial statements revenue mix fee income loans deposits notes to accounts"
+    top_k: 3
+    filter_doc_types:
+      - cfa_framework
+      - financial_statement
+      - sample_report
+      - industry
+
+  industry_context:
+    queries:
+      - "Vietnamese banking sector NIM NPL credit growth trends outlook"
+      - "nganh ngan hang Viet Nam tang truong tin dung NIM xu huong"
+      - "quarterly bank financial statements NIM NPL provision credit cost deposit growth"
+    top_k: 3
+    filter_doc_types:
+      - financial_statement
+      - industry
+      - regulatory
+      - sample_report
+
+  regulatory_risk:
+    queries:
+      - "NHNN SBV regulation capital adequacy Basel III Vietnam banking circular"
+      - "quy dinh NHNN he so an toan von CAR Basel ngan hang Viet Nam thong tu"
+    top_k: 3
+    filter_doc_types:
+      - regulatory
+      - industry
+
+  peer_benchmark:
+    queries:
+      - "Vietnamese bank P/B P/E ROE ROA valuation peer comparison big4"
+      - "so sanh dinh gia ngan hang Viet Nam P/B ROE benchmark"
+      - "bank financial statements peer comparison ROE ROA NIM NPL coverage CASA CAR"
+    top_k: 3
+    filter_doc_types:
+      - financial_statement
+      - sample_report
+      - industry
+
+  valuation_methodology:
+    queries:
+      - "bank valuation P/B Gordon growth model DDM residual income equity research method"
+      - "phuong phap dinh gia ngan hang mo hinh Gordon justified P/B"
+    top_k: 3
+    filter_doc_types:
+      - cfa_framework
+      - sample_report

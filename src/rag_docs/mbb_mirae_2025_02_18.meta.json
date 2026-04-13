@@ -1,0 +1,15 @@
+{
+  "title": "Mirae Asset Securities Vietnam Report — Military Bank (MBB)",
+  "doc_type": "sample_report",
+  "sector": "banking",
+  "language": "en",
+  "publish_date": "2025-02-18",
+  "jurisdiction": "VN",
+  "url": "https://masvn.com/api/attachment/file/1739848176141-EN_MBB_Report_MUA_MAS_4Q24_ed_S.pdf",
+  "ticker_scope": "MBB",
+  "as_of_date": "2024-12-31",
+  "source_org": "Mirae Asset Securities Vietnam",
+  "source_tier": "secondary",
+  "file_name": "mbb_mirae_2025_02_18.pdf",
+  "status": "verified_source"
+}

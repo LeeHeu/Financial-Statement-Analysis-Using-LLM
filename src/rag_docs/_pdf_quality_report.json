@@ -1,0 +1,130 @@
+[
+  {
+    "file": "banking_sector_ssi_2024_12_26.pdf",
+    "status": "ok",
+    "pages_checked": 5,
+    "chars_extracted": 15079,
+    "weird_char_ratio": 0.0,
+    "recommendation": "use_pdf"
+  },
+  {
+    "file": "cfa_research_challenge_guidelines.pdf",
+    "status": "ok",
+    "pages_checked": 2,
+    "chars_extracted": 1974,
+    "weird_char_ratio": 0.0,
+    "recommendation": "use_pdf"
+  },
+  {
+    "file": "cfa_research_challenge_official_rules_2025_2026.pdf",
+    "status": "ok",
+    "pages_checked": 5,
+    "chars_extracted": 16665,
+    "weird_char_ratio": 0.0,
+    "recommendation": "use_pdf"
+  },
+  {
+    "file": "fiingroup_vietnam_banking_report_2024_demo.pdf",
+    "status": "ok",
+    "pages_checked": 5,
+    "chars_extracted": 5969,
+    "weird_char_ratio": 0.0,
+    "recommendation": "use_pdf"
+  },
+  {
+    "file": "iosco_sellside_research_principles.pdf",
+    "status": "ok",
+    "pages_checked": 5,
+    "chars_extracted": 11735,
+    "weird_char_ratio": 0.0,
+    "recommendation": "use_pdf"
+  },
+  {
+    "file": "mbb_mirae_2025_02_18.pdf",
+    "status": "ok",
+    "pages_checked": 5,
+    "chars_extracted": 17969,
+    "weird_char_ratio": 0.0,
+    "recommendation": "use_pdf"
+  },
+  {
+    "file": "mbb_vietcap_2024_12_02.pdf",
+    "status": "ok",
+    "pages_checked": 5,
+    "chars_extracted": 10020,
+    "weird_char_ratio": 0.0,
+    "recommendation": "use_pdf"
+  },
+  {
+    "file": "tcb_mirae_2024_11_11.pdf",
+    "status": "ok",
+    "pages_checked": 5,
+    "chars_extracted": 12531,
+    "weird_char_ratio": 0.0,
+    "recommendation": "use_pdf"
+  },
+  {
+    "file": "tcb_vietcap_2024_12_02.pdf",
+    "status": "ok",
+    "pages_checked": 5,
+    "chars_extracted": 9640,
+    "weird_char_ratio": 0.0,
+    "recommendation": "use_pdf"
+  },
+  {
+    "file": "tt11_2021_nhnn_asset_classification_historical.pdf",
+    "status": "error",
+    "pages_checked": 0,
+    "chars_extracted": 0,
+    "weird_char_ratio": 0.0,
+    "recommendation": "cannot_open_pdf: No /Root object! - Is this really a PDF?"
+  },
+  {
+    "file": "tt31_2024_nhnn_asset_classification.pdf",
+    "status": "warning",
+    "pages_checked": 5,
+    "chars_extracted": 4,
+    "weird_char_ratio": 0.0,
+    "recommendation": "likely_scan_or_low_text_extractability"
+  },
+  {
+    "file": "tt37_2025_nhnn_amend_tt31.pdf",
+    "status": "error",
+    "pages_checked": 0,
+    "chars_extracted": 0,
+    "weird_char_ratio": 0.0,
+    "recommendation": "cannot_open_pdf: No /Root object! - Is this really a PDF?"
+  },
+  {
+    "file": "vbhn_05_2024_nhnn_car_basel2.pdf",
+    "status": "error",
+    "pages_checked": 0,
+    "chars_extracted": 0,
+    "weird_char_ratio": 0.0,
+    "recommendation": "cannot_open_pdf: No /Root object! - Is this really a PDF?"
+  },
+  {
+    "file": "vcb_vietcap_2024_12_02.pdf",
+    "status": "ok",
+    "pages_checked": 5,
+    "chars_extracted": 9760,
+    "weird_char_ratio": 0.0,
+    "recommendation": "use_pdf"
+  },
+  {
+    "file": "worldbank_vietnam_banking_soundness_2025.pdf",
+    "status": "ok",
+    "pages_checked": 5,
+    "chars_extracted": 4844,
+    "weird_char_ratio": 0.0,
+    "recommendation": "use_pdf"
+  },
+  {
+    "file": "worldbank_vietnam_macro_monitor_2024_11.pdf",
+    "status": "ok",
+    "pages_checked": 4,
+    "chars_extracted": 11511,
+    "weird_char_ratio": 0.0,
+    "recommendation": "use_pdf"
+  }
+]

@@ -66,7 +66,7 @@ Store percentages as numbers (e.g., 1.5 not "1.5%"). Store tỷ đồng as numbe
 {
   "ticker": "VCB",
   "company_name": "Ngân hàng Vietcombank",
-  "fetch_timestamp": "2026-03-03",
+  "fetch_timestamp": "2026-03-12",
   "source_urls": [],
   "fetch_notes": "",
   "key_ratios": {

@@ -1,0 +1,122 @@
+{
+  "s_0ffc8ad6": {
+    "title": "SSI Research — Vietnam Banking Sector Outlook 2025",
+    "url": "https://ftp2.ssi.com.vn/Customers/GDDT/Analyst_Report/Sector%20Report/Trien%20vong%20nganh%20ngan%20hang%20nam%202025_2024.12.26_SSIResearch.pdf",
+    "date": "2024-12-26",
+    "doc_type": "industry",
+    "language": "vi",
+    "jurisdiction": "VN",
+    "sector": "banking",
+    "ticker_scope": "VCB,TCB,MBB,CTG,ACB,BID,VPB,OTHERS"
+  },
+  "s_bca45b2d": {
+    "title": "cfa_research_challenge_guidelines",
+    "url": "",
+    "date": "unknown",
+    "doc_type": "unknown",
+    "language": "unknown",
+    "jurisdiction": "unknown",
+    "sector": "banking",
+    "ticker_scope": "GENERIC"
+  },
+  "s_b43bf0a6": {
+    "title": "CFA Institute Research Challenge — Official Rules 2025–2026",
+    "url": "https://www.cfainstitute.org/sites/default/files/-/media/documents/support/research-challenge/challenge/research-challenge-official-rules.pdf",
+    "date": "2025-09-01",
+    "doc_type": "cfa_framework",
+    "language": "en",
+    "jurisdiction": "Global",
+    "sector": "multi-sector",
+    "ticker_scope": "GENERIC"
+  },
+  "s_88c43260": {
+    "title": "FiinGroup — Vietnam Banking Report 2024 (Demo)",
+    "url": "https://fiingroup.vn/upload/docs/Vietnam-Banking-Report-2024-DEMO.pdf",
+    "date": "2024-05-31",
+    "doc_type": "industry",
+    "language": "en",
+    "jurisdiction": "VN",
+    "sector": "banking",
+    "ticker_scope": "VIETNAM,BANKING,SYSTEM"
+  },
+  "s_3e06617d": {
+    "title": "IOSCO Statement of Principles for Addressing Sell-Side Securities Analyst Conflicts of Interest",
+    "url": "https://www.iosco.org/library/pubdocs/pdf/ioscopd150.pdf",
+    "date": "2003-09-25",
+    "doc_type": "cfa_framework",
+    "language": "en",
+    "jurisdiction": "Global",
+    "sector": "capital-markets",
+    "ticker_scope": "GENERIC"
+  },
+  "s_1bf87fb7": {
+    "title": "Mirae Asset Securities Vietnam Report — Military Bank (MBB)",
+    "url": "https://masvn.com/api/attachment/file/1739848176141-EN_MBB_Report_MUA_MAS_4Q24_ed_S.pdf",
+    "date": "2025-02-18",
+    "doc_type": "sample_report",
+    "language": "en",
+    "jurisdiction": "VN",
+    "sector": "banking",
+    "ticker_scope": "MBB"
+  },
+  "s_386a6f5a": {
+    "title": "Vietcap Update Report — Military Bank (MBB)",
+    "url": "https://www.vietcap.com.vn/api/cms-api/uploads/file/202412/MBB-20241202-BUY.pdf",
+    "date": "2024-12-02",
+    "doc_type": "sample_report",
+    "language": "en",
+    "jurisdiction": "VN",
+    "sector": "banking",
+    "ticker_scope": "MBB"
+  },
+  "s_0cf8cdcb": {
+    "title": "Mirae Asset Securities Vietnam Report — Techcombank (TCB)",
+    "url": "https://masvn.com/api/attachment/file/1731313891763-20241111_TCB_2024_EN_Final.pdf",
+    "date": "2024-11-11",
+    "doc_type": "sample_report",
+    "language": "en",
+    "jurisdiction": "VN",
+    "sector": "banking",
+    "ticker_scope": "TCB"
+  },
+  "s_b188025a": {
+    "title": "Vietcap Update Report — Techcombank (TCB)",
+    "url": "https://www.vietcap.com.vn/api/cms-api/uploads/file/202412/TCB-20241202-BUY.pdf",
+    "date": "2024-12-02",
+    "doc_type": "sample_report",
+    "language": "en",
+    "jurisdiction": "VN",
+    "sector": "banking",
+    "ticker_scope": "TCB"
+  },
+  "s_c34f74a7": {
+    "title": "Vietcap Update Report — Vietcombank (VCB)",
+    "url": "https://www.vietcap.com.vn/api/cms-api/uploads/file/202412/VCB-20241202-BUY.pdf",
+    "date": "2024-12-02",
+    "doc_type": "sample_report",
+    "language": "en",
+    "jurisdiction": "VN",
+    "sector": "banking",
+    "ticker_scope": "VCB"
+  },
+  "s_b949d4dc": {
+    "title": "World Bank — Vietnam: Strengthening Banking Sector Soundness and Development (P171375) ICR",
+    "url": "https://documents1.worldbank.org/curated/en/099062325135025950/pdf/P171375-ff64d08c-da3d-436a-9327-251c4a74b994.pdf",
+    "date": "2025-05-26",
+    "doc_type": "industry",
+    "language": "en",
+    "jurisdiction": "VN",
+    "sector": "banking",
+    "ticker_scope": "GENERIC"
+  },
+  "s_1c3f0902": {
+    "title": "World Bank — Vietnam Macro Monitoring (November 2024)",
+    "url": "https://documents1.worldbank.org/curated/en/099521312232430557/pdf/IDU1b489f5311c274141ff194df1efca5d60448f.pdf",
+    "date": "2024-12-01",
+    "doc_type": "industry",
+    "language": "en",
+    "jurisdiction": "VN",
+    "sector": "macro",
+    "ticker_scope": "GENERIC"
+  }
+}

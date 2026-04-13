@@ -4,6 +4,7 @@ The Markdown-formatted streaming output version of Deep Orchestrator Finance Res
 """
 
 import asyncio
+import json
 import os
 import re
 import sys
@@ -20,6 +21,7 @@ from mcp_agent.workflows.deep_orchestrator.config import DeepOrchestratorConfig
 from mcp_agent.workflows.deep_orchestrator.orchestrator import DeepOrchestrator
 from mcp_agent.workflows.llm.augmented_llm import RequestParams
 
+from finance_deep_search.finance_metrics import compute_cfa_metrics
 from finance_deep_search.prompts import load_prompt_markdown
 from finance_deep_search.string_utils import replace_variables
 
@@ -193,6 +195,9 @@ class DeepSearch():
                 f.write(str(web_gatherer_result))
 
         # ── Phase 1: Financial research (deep orchestrator) ───────────────────
+        supplementary_quality_path = self._build_and_write_supplementary_quality()
+        results['supplementary_quality'] = str(supplementary_quality_path)
+
         financial_research_task_prompt = self.prepare_financial_research_task_prompt()
         max_iterations = 1 if self.short_run else 10
         research_result = await self.orchestrator.generate(
@@ -215,6 +220,12 @@ class DeepSearch():
             file.write(research_payload if research_payload else str(research_result))
 
         # ── Phase 2: Excel writer ─────────────────────────────────────────────
+        # Phase 1.5: deterministic CFA metrics for report numeric consistency
+        metrics_path = self._build_and_write_cfa_metrics(
+            research_payload if research_payload else str(research_result)
+        )
+        results['metrics'] = str(metrics_path)
+
         excel_task_prompt = self.prepare_excel_task_prompt(
             research_payload if research_payload else str(research_result)
         )
@@ -298,6 +309,142 @@ class DeepSearch():
 
         return ""
 
+    def _build_and_write_cfa_metrics(self, research_payload: str) -> Path:
+        """
+        Build deterministic CFA metrics from parsed research payload + yfinance market data.
+        Writes output/cfa_metrics_{ticker}.json and returns the path.
+        """
+        output_path_abs = Path(self.output_path).resolve()
+        metrics_path = output_path_abs / f"cfa_metrics_{self.ticker}.json"
+        yfinance_path = output_path_abs / f"yfinance_{self.ticker}.json"
+
+        payload: dict[str, Any] = {}
+        try:
+            research_data = json.loads(research_payload)
+            yfinance_data = json.loads(yfinance_path.read_text(encoding="utf-8"))
+            market_data = yfinance_data.get("market_data", {}) if isinstance(yfinance_data, dict) else {}
+            metrics = compute_cfa_metrics(
+                research_data=research_data if isinstance(research_data, dict) else {},
+                market_data=market_data if isinstance(market_data, dict) else {},
+                assumptions={"ke_percent": 13.0, "g_percent": 8.0},
+            )
+            payload = {
+                "ticker": self.ticker,
+                "company_name": self.company_name,
+                "as_of_date": datetime.now().strftime("%Y-%m-%d"),
+                "metrics": metrics,
+            }
+        except Exception as e:
+            payload = {
+                "ticker": self.ticker,
+                "company_name": self.company_name,
+                "as_of_date": datetime.now().strftime("%Y-%m-%d"),
+                "error": f"Failed to compute deterministic CFA metrics: {e}",
+                "metrics": {},
+            }
+            if self.logger:
+                self.logger.warning(payload["error"])
+
+        metrics_path.parent.mkdir(parents=True, exist_ok=True)
+        metrics_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        if self.logger:
+            self.logger.info(f"Wrote deterministic CFA metrics to: {metrics_path}")
+        return metrics_path
+
+    def _build_and_write_supplementary_quality(self) -> Path:
+        """
+        Assess completeness of supplementary web data and write a quality summary JSON.
+        """
+        output_path_abs = Path(self.output_path).resolve()
+        supp_path = output_path_abs / f"supplementary_{self.ticker}.json"
+        quality_path = output_path_abs / f"supplementary_quality_{self.ticker}.json"
+
+        required_ratio_fields = [
+            ("key_ratios", "npl_ratio_percent", "FY2024"),
+            ("key_ratios", "coverage_ratio_percent", "FY2024"),
+            ("key_ratios", "car_percent", "FY2024"),
+            ("key_ratios", "casa_ratio_percent", "FY2024"),
+            ("key_ratios", "ldr_percent", "FY2024"),
+        ]
+        required_guidance_fields = [
+            ("management_guidance", "credit_growth_target_percent"),
+            ("management_guidance", "pretax_profit_target_ty_dong"),
+            ("management_guidance", "nim_target_percent"),
+            ("management_guidance", "npl_target_percent"),
+            ("management_guidance", "roe_target_percent"),
+        ]
+
+        payload: dict[str, Any] = {
+            "ticker": self.ticker,
+            "as_of_date": datetime.now().strftime("%Y-%m-%d"),
+            "status": "missing",
+            "missing_fields": [],
+            "missing_count": 0,
+            "required_count": len(required_ratio_fields) + len(required_guidance_fields),
+            "completeness_ratio": 0.0,
+            "notes": "supplementary file not found",
+        }
+
+        if supp_path.exists():
+            try:
+                supp = json.loads(supp_path.read_text(encoding="utf-8"))
+                missing_fields: list[str] = []
+                present_count = 0
+
+                for p0, p1, p2 in required_ratio_fields:
+                    value = ((supp.get(p0, {}) or {}).get(p1, {}) or {}).get(p2)
+                    field_name = f"{p0}.{p1}.{p2}"
+                    if value is None:
+                        missing_fields.append(field_name)
+                    else:
+                        present_count += 1
+
+                for p0, p1 in required_guidance_fields:
+                    value = ((supp.get(p0, {}) or {}).get(p1))
+                    field_name = f"{p0}.{p1}"
+                    if value is None:
+                        missing_fields.append(field_name)
+                    else:
+                        present_count += 1
+
+                required_total = len(required_ratio_fields) + len(required_guidance_fields)
+                completeness = round(present_count / required_total, 4) if required_total else 0.0
+                status = "good"
+                if completeness < 0.4:
+                    status = "poor"
+                elif completeness < 0.8:
+                    status = "partial"
+
+                payload = {
+                    "ticker": self.ticker,
+                    "as_of_date": datetime.now().strftime("%Y-%m-%d"),
+                    "status": status,
+                    "missing_fields": missing_fields,
+                    "missing_count": len(missing_fields),
+                    "required_count": required_total,
+                    "completeness_ratio": completeness,
+                    "notes": supp.get("fetch_notes", ""),
+                }
+            except Exception as e:
+                payload = {
+                    "ticker": self.ticker,
+                    "as_of_date": datetime.now().strftime("%Y-%m-%d"),
+                    "status": "error",
+                    "missing_fields": [],
+                    "missing_count": 0,
+                    "required_count": len(required_ratio_fields) + len(required_guidance_fields),
+                    "completeness_ratio": 0.0,
+                    "notes": f"Failed to parse supplementary JSON: {e}",
+                }
+
+        quality_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        if self.logger:
+            self.logger.info(f"Wrote supplementary data quality summary to: {quality_path}")
+        return quality_path
+
     def prepare_financial_research_task_prompt(self) -> str:
         """Load and format the financial task research task prompt."""
         financial_research_task_prompt_template = load_prompt_markdown(
@@ -357,7 +504,10 @@ class DeepSearch():
             reporting_currency=self.reporting_currency,
             yfinance_json_path=str(output_path_abs / f"yfinance_{self.ticker}.json"),
             supplementary_json_path=str(output_path_abs / f"supplementary_{self.ticker}.json"),
+            supplementary_quality_json_path=str(output_path_abs / f"supplementary_quality_{self.ticker}.json"),
             research_result_path=str(output_path_abs / "research_result.txt"),
+            cfa_metrics_json_path=str(output_path_abs / f"cfa_metrics_{self.ticker}.json"),
+            retrieved_context_json_path=str(output_path_abs / f"retrieved_context_{self.ticker}.json"),
             cfa_report_path=str(output_path_abs / f"cfa_report_{self.ticker}.md"),
             current_date=datetime.now().strftime("%Y-%m-%d"),
             current_year=str(datetime.now().year),

@@ -1,0 +1,9 @@
+{
+  "files_total": 16,
+  "files_processed": 12,
+  "files_skipped_empty": 1,
+  "files_failed_extract": 3,
+  "unknown_doc_type_files": [
+    "cfa_research_challenge_guidelines.pdf"
+  ]
+}

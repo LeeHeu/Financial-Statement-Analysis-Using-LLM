@@ -1,0 +1,15 @@
+{
+  "title": "Vietcap Update Report — Techcombank (TCB)",
+  "doc_type": "sample_report",
+  "sector": "banking",
+  "language": "en",
+  "publish_date": "2024-12-02",
+  "jurisdiction": "VN",
+  "url": "https://www.vietcap.com.vn/api/cms-api/uploads/file/202412/TCB-20241202-BUY.pdf",
+  "ticker_scope": "TCB",
+  "as_of_date": "2024-12-02",
+  "source_org": "Vietcap",
+  "source_tier": "secondary",
+  "file_name": "tcb_vietcap_2024_12_02.pdf",
+  "status": "verified_source"
+}

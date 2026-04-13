@@ -1,0 +1,15 @@
+{
+  "title": "Mirae Asset Securities Vietnam Report — Techcombank (TCB)",
+  "doc_type": "sample_report",
+  "sector": "banking",
+  "language": "en",
+  "publish_date": "2024-11-11",
+  "jurisdiction": "VN",
+  "url": "https://masvn.com/api/attachment/file/1731313891763-20241111_TCB_2024_EN_Final.pdf",
+  "ticker_scope": "TCB",
+  "as_of_date": "2024-09-30",
+  "source_org": "Mirae Asset Securities Vietnam",
+  "source_tier": "secondary",
+  "file_name": "tcb_mirae_2024_11_11.pdf",
+  "status": "verified_source"
+}
